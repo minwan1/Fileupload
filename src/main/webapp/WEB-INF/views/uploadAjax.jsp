@@ -33,14 +33,14 @@
 <script src="//ajax.googleapis.com/ajax/libs/jquery/1/jquery.min.js"></script>
  	<script type="text/javascript">
 		$('.fileDrop').on("dragenter dragover",function(event){
-			event.preventDefault();
+			event.preventDefault();//파일올리면 사진으로 브라우저가 변경되니까 막귀위한것
 			
 		});
 		
 		$('.fileDrop').on("drop",function(event){
-			event.preventDefault();
+			event.preventDefault();  //파일올리면 사진으로 브라우저가 변경되니까 막귀위한것
 			
-			var files = event.originalEvent.dataTransfer.files;
+			var files = event.originalEvent.dataTransfer.files; //파일이 화면올려졌을떄 파일정보를 가지고옴
 			var file = files[0];
 			
 			console.log(file);

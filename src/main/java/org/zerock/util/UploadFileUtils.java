@@ -19,13 +19,13 @@ public class UploadFileUtils {
 	public static String uploadFile(String uploadPath, String orignalName,byte[] fileData)throws Exception{
 		UUID uid = UUID.randomUUID();
 		
-		String savedName = uid.toString() + "_"+orignalName;
+		String savedName = uid.toString() + "_"+orignalName; //uid+파일이름
 		
-		String savedPath = calcPath(uploadPath);
+		String savedPath = calcPath(uploadPath); //날짜별로 계산해서 폴더경로만듬
 		
-		File target = new File(uploadPath + savedPath, savedName);
+		File target = new File(uploadPath + savedPath, savedName); // 날짜별경로 + 파일이름,   경로에 파일이름을넣는다.
 		
-		FileCopyUtils.copy(fileData, target);
+		FileCopyUtils.copy(fileData, target); //파일데이타기록 ?
 		
 		String formatName = orignalName.substring(orignalName.lastIndexOf(".")+1);
 		
