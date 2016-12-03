@@ -48,7 +48,7 @@
 			formData.append("file", file);
 			
 			$.ajax({
-				url: '/uploadAjax',
+				url: '/uploadAjax', //여기로 파일을 저장하면 밑에서 displayFile로 요청해서받아올수잇음
 				data: formData,
 				dataType:'text',
 				processData:false,
@@ -56,6 +56,20 @@
 				type: 'POST',
 				  success: function(data){
 					 	
+					  
+					  var str="";
+					 
+					  console.log(data);
+					  console.log(checkImageType(data));
+					  
+					  if(checkImageType(data)){ //년도/파일이름까지 다온다,
+//					  	 var temp="asdasd/asdsadda////";
+						  str="<div>" + "<a href='displayFile?fileName="+getImageLink(data)+"'><img src='displayFile?fileName="+data+"' />"+data+"</a><small data-src="+data+">X</small></div>"; //따로 서버로 요청하는부분
+					  }else{
+						  str="<div><a href='displayFile?fileName='"+data+"'>"+getOriginalName(data)+"</a><small data-src='"+data+"'>X</small></div>";
+						  
+					  }
+					  $(".uploadedList").append(str);
 					  alert(data);
 					 
 				  }
@@ -63,6 +77,56 @@
 			});
 			
 		}); 
+		
+		$(".uploadedList").on("click", "small", function(event){
+			
+			var that = $(this);
+			$.ajax({
+				url:"deleteFile",
+				type:"post",
+				data: {fileName:$(this).attr("data-src")},
+				datatype:"text",
+				success:function(result){
+					if(result == 'deleted'){
+						alert("deleted");
+						that.parent("div").remove();
+					}
+					
+				}
+				
+			})
+			
+			
+		});
+		
+		
+		function checkImageType(fileName){ //정규식으로 이미지 확인여부
+			var pattern = /jpg|gif|png|jpeg/i;
+			
+			return fileName.match(pattern); //ture/false여부
+		}
+		
+		function getOriginalName(fileName){ //substr로 원래값만 뽑아내는부분
+			if(checkImageType(fileName)){
+				return;
+			}
+			
+			var idx = fileName.indexOf("_") + 1;
+			return fileName.substr(idx);
+			
+		}
+		
+		function getImageLink(fileName){
+			if(!checkImageType(fileName)){
+				return ;
+			}
+			console.log("1:"+fileName);
+			var front = fileName.substr(0,12);
+			var end = fileName.substr(14);
+			console.log("2:"+front+end);
+			return front + end;
+			
+		}
 		
 
 	</script>

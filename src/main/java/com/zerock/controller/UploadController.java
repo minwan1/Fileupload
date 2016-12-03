@@ -48,7 +48,7 @@ public class UploadController {
 		logger.info("size: "+file.getSize());
 		logger.info("contentType "+file.getContentType());
 		
-		String savedName = uploadFile(file.getOriginalFilename(), file.getBytes());
+		String savedName = uploadFile(file.getOriginalFilename(), file.getBytes()); //업로드파일함수호출 실제 파입업로드
 		model.addAttribute("savedName",savedName);
 		
 		return "uploadResult";
@@ -70,7 +70,7 @@ public class UploadController {
 		
 	}
 	
-	@ResponseBody
+	@ResponseBody//드래그 앤 드랍방식
 	@RequestMapping(value = "/uploadAjax", method = RequestMethod.POST, produces = "text/plain;charset=UTF-8") //ajax로 받고 post형식에 utf-8로받음 ajx로 받을떄
 	public ResponseEntity<String> uploadAjax(MultipartFile file)throws Exception{
 		logger.info("orginalName: "+file.getOriginalFilename());
@@ -83,8 +83,8 @@ public class UploadController {
 	}
 	
 	@ResponseBody
-	@RequestMapping("/displayFile")
-	public ResponseEntity<byte[]> displayFile(String fileName)throws Exception{
+	@RequestMapping("/displayFile") //이미지파일인경우 이미지출력,파일인경우 파일다운로드 가능한 메소드
+	public ResponseEntity<byte[]> displayFile(String fileName)throws Exception{ //파일로드하는부분
 		InputStream in = null;
 		ResponseEntity<byte[]> entity = null;
 		
@@ -92,7 +92,7 @@ public class UploadController {
 		
 		try {
 			String formatName = fileName.substring(fileName.lastIndexOf(".")+1);
-			MediaType mType = MediaUtils.getMediaType(formatName);
+			MediaType mType = MediaUtils.getMediaType(formatName); //무슨타입인지확인
 			
 			HttpHeaders headers = new HttpHeaders();
 			
@@ -115,12 +115,34 @@ public class UploadController {
 		} catch (Exception e) {
 			// TODO: handle exception
 			e.printStackTrace();
-			entity = new ResponseEntity<byte[]>(HttpStatus.BAD_REQUEST);
+			entity = new ResponseEntity<byte[]>(HttpStatus.BAD_REQUEST); //entity안에는 /년/월/일/파일이름으로 리턴해준다, (바이트로돌려줌)
 		}finally {
 			in.close();
 		}
 		
 		return entity;
+	}
+	
+	@ResponseBody
+	@RequestMapping(value="/deleteFile", method=RequestMethod.POST)
+	public ResponseEntity<String> deleteFile(String fileName){
+		
+		logger.info("delete file:"+fileName);
+		
+		String formatName = fileName.substring(fileName.lastIndexOf(".")+1);
+		
+		MediaType mType = MediaUtils.getMediaType(formatName);
+		
+		if(mType != null){
+			String front = fileName.substring(0, 12);
+			String end = fileName.substring(14);
+			new File(uploadPath + (front+end).replace('/', File.separatorChar)).delete();
+			
+		}
+		new File(uploadPath + fileName.replace('/', File.separatorChar)).delete();
+		
+		return new ResponseEntity<String>("deleted", HttpStatus.OK);
+		
 	}
 
 }
